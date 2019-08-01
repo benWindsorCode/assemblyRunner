@@ -6,3 +6,4 @@ class Register(Enum):
     BAK = 1
     IN = 2
     OUT = 3
+    DAT = 4
