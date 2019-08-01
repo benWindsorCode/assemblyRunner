@@ -4,8 +4,10 @@ from register import Register
 
 
 class Interpreter:
-    def __init__(self, path):
+    def __init__(self, path, input = None):
         self.path: str = path
+        self.input: List[int] = input
+        self.input_pos: int = None
         self.file: List[str] = []
         self.labels: Dict[str, int] = {}
         self.registers: Dict[Register, int] = { Register.ACC: 0, Register.BAK: 0, Register.DAT: 0, Register.IN: None, Register.OUT: None }
@@ -14,6 +16,9 @@ class Interpreter:
 
     def load_data(self):
         self.file = [line.rstrip('\n') for line in open(self.path)]
+        if self.input is not None:
+            self.registers[Register.IN] = self.input[0]
+            self.input_pos = 0
 
     # Iterate through code and pick out any labels and their locations
     def parse(self):
@@ -25,13 +30,14 @@ class Interpreter:
                 else:
                     self.labels[label] = i
         
+    # Iterate over the file, terminating when current_line reachse the end of the file
     def run(self):
         terminated = False
         current_line = 0
-
+        # Handle labels, jump commands and register manipulations commands separately
         while terminated is not True:
             line: str = self.file[current_line]
-            if self.__is_label(line):
+            if self.__is_label(line) or self.__is_comment(line):
                 current_line += 1
                 pass
             elif self.__is_move(line):
@@ -42,7 +48,7 @@ class Interpreter:
                 command: Command = self.extract_command(line)
                 self.parse_command(command, line)
                 current_line += 1
-                print(self.registers)
+                # print(self.registers)
 
             if current_line >= len(self.file):
                 terminated = True
@@ -53,14 +59,15 @@ class Interpreter:
         first_word = line.split(" ")[0]
         return Command[first_word]
     
+    # Process a given register manipulation command
     def parse_command(self, command: Command, line: str):
         if command == Command.MOV:
             second_word: str = line.split(" ")[1]
             third_word: str = line.split(" ")[2]
             self._handle_mov(second_word, third_word)
         elif command == Command.ADD:
-            val = int(line.split(" ")[1])
-            self.registers[Register.ACC] = self.registers[Register.ACC] + val
+            second_word: str = line.split(" ")[1]
+            self._handle_add(second_word)
         elif command == Command.SUB:
             val = int(line.split(" ")[1])
             self.registers[Register.ACC] = self.registers[Register.ACC] - val
@@ -69,7 +76,7 @@ class Interpreter:
         elif command == Command.SWP:
             self._handle_swp()
 
-    # Given a jump/move command, return the next line to execute
+    # Given a jump command return the next line to execute
     def parse_move(self, command: Command, label: str, current_line: int) -> int:
         if command == Command.JMP:
             return self.labels[label]
@@ -95,10 +102,20 @@ class Interpreter:
             self.registers[Register[dst]] = val
         else:
             val = self.registers[Register[src]]
+            if Register[src] == Register.IN:
+                self.__next_input()
             self.registers[Register[dst]] = val
 
         if Register[dst] == Register.OUT:
             print(self.registers[Register.OUT])
+
+    def _handle_add(self, second_word: str):
+        val = None
+        if self.__is_int(second_word):
+            val = int(second_word)
+        else:
+            val = self.registers[Register[second_word]]
+        self.registers[Register.ACC] = self.registers[Register.ACC] + val
 
     def _handle_sav(self):
         self.registers[Register.BAK] = self.registers[Register.ACC]
@@ -108,8 +125,11 @@ class Interpreter:
         self.registers[Register.BAK] = self.registers[Register.ACC]
         self.registers[Register.ACC] = tmp
 
-    def __is_label(self, line:str ):
+    def __is_label(self, line:str) -> bool:
         return line[-1] == ":"
+
+    def __is_comment(self, line: str) -> bool:
+        return line.startswith('#')
 
     def __is_move(self, line: str) -> bool:
         first_word: str = line.split(" ")[0]
@@ -122,3 +142,10 @@ class Interpreter:
         if word[0] in ('-', '+'):
             return word[1:].isdigit()
         return word.isdigit()
+    
+    def __next_input(self):
+        self.input_pos += 1
+        if self.input_pos >= len(self.input):
+            self.registers[Register.IN] = None
+        else:
+            self.registers[Register.IN] = self.input[self.input_pos]
