@@ -23,7 +23,19 @@ There are the following commands:
 - JGZ \<label\> = Jump execution to the specified label if the value in ACC is greater than zero
 - JLZ \<label\> = Jump execution to the specified label if the value in ACC is less than zero
 
-Comments can be made my starting a line witn a \# symbol.\
+Comments can be made my starting a line witn a \# symbol.
 
 # Example 
 The following code takes a zero terminated sequence 
+```
+LOOP:
+MOV IN DAT
+MOV DAT ACC
+JEZ END
+ADD DAT
+MOV ACC OUT
+JMP LOOP
+END:
+```
+Example input \[1,3,5,0\]
+Example output \[2,5,10\]
