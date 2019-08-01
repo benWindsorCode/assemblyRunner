@@ -35,7 +35,9 @@ class Interpreter:
                 current_line += 1
                 pass
             elif self.__is_move(line):
-                pass
+                command: Command = self.extract_command(line)
+                label = line.split(" ")[1]
+                current_line = self.parse_move(command, label, current_line)
             else:
                 command: Command = self.extract_command(line)
                 self.parse_command(command, line)
@@ -56,19 +58,47 @@ class Interpreter:
             second_word: str = line.split(" ")[1]
             third_word: str = line.split(" ")[2]
             self._handle_mov(second_word, third_word)
+        elif command == Command.ADD:
+            val = int(line.split(" ")[1])
+            self.registers[Register.ACC] = self.registers[Register.ACC] + val
+        elif command == Command.SUB:
+            val = int(line.split(" ")[1])
+            self.registers[Register.ACC] = self.registers[Register.ACC] - val
         elif command == Command.SAV:
             self._handle_sav()
         elif command == Command.SWP:
             self._handle_swp()
+
+    # Given a jump/move command, return the next line to execute
+    def parse_move(self, command: Command, label: str, current_line: int) -> int:
+        if command == Command.JMP:
+            return self.labels[label]
+        elif command == Command.JEZ:
+            if self.registers[Register.ACC] == 0:
+                return self.labels[label]
+            else:
+                return current_line + 1
+        elif command == Command.JGZ:
+            if self.registers[Register.ACC] > 0:
+                return self.labels[label]
+            else:
+                return current_line + 1
+        elif command == Command.JLZ:
+            if self.registers[Register.ACC] < 0:
+                return self.labels[label]
+            else:
+                return current_line + 1
     
     def _handle_mov(self, src: str, dst: str):
-        # todo: implement check to stop direct access to BAK
         if self.__is_int(src):
             val = int(src)
             self.registers[Register[dst]] = val
         else:
             val = self.registers[Register[src]]
             self.registers[Register[dst]] = val
+
+        if Register[dst] == Register.OUT:
+            print(self.registers[Register.OUT])
 
     def _handle_sav(self):
         self.registers[Register.BAK] = self.registers[Register.ACC]

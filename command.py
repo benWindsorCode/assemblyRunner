@@ -10,3 +10,4 @@ class Command(Enum):
     JEZ = 5
     JGZ = 6
     JLZ = 7
+    SUB = 8
