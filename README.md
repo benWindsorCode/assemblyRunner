@@ -50,20 +50,20 @@ Example output:
 The code is structured with specific enums for commands and registers in the 'command.py' and 'register.py' files. The 'main.py' file simply sets up the interpreter and points it to a file. The action happens in the 'interpreter.py' file. 
 
 On initialisation Interpreter sets up the data by splitting the file on new lines
-```
+```python
 self.file = [line.rstrip('\n') for line in open(self.path)]
 ```
 and then loading in any input data.
 
 It then reads through the file in the 'parse' function to pull out any labels for blocks of code, storing them in a dictionary for later use, along with their line numbers so that we can easily jump to each label. To detect a label we use the simple unil
-```
+```python
 def __is_label(self, line:str) -> bool:
     return line[-1] == ":"
 ```
 and then add to the ditionary once found.
 
 After this it is just a case of iterating through the provided file line by line. At each line we evaluate what the command is and act accordingly. This all happens in the 'run' function. In particular the important code is
-```
+```python
 if self.__is_label(line) or self.__is_comment(line):
     current_line += 1
     pass
@@ -77,7 +77,7 @@ else:
     current_line += 1
 ```
 where we first handle label definitions, then any jump/flow control commands, and then finally any commands to move data around. I extracted logic to handle jump and data commands into their own functions 'parse_move' and 'parse_command' respectively. Each function is simply a switch statement in effect, extracting the command from the line and then handing it off to a handler funtion. For example this is the 'parse_command' function
-```
+```python
 if command == Command.MOV:
     second_word: str = line.split(" ")[1]
     third_word: str = line.split(" ")[2]
