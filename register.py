@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Registers(Enum):
+class Register(Enum):
     ACC = 0
     BAK = 1
     IN = 2
