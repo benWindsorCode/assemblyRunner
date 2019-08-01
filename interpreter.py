@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import List
+from typing import Dict
 from command import Command
 from register import Register
 
@@ -14,6 +15,7 @@ class Interpreter:
         self.load_data()
         self.parse()
 
+    # Read in file and setup any input
     def load_data(self):
         self.file = [line.rstrip('\n') for line in open(self.path)]
         if self.input is not None:
@@ -48,7 +50,7 @@ class Interpreter:
                 command: Command = self.extract_command(line)
                 self.parse_command(command, line)
                 current_line += 1
-                # print(self.registers)
+                # print(self.registers) use this for debugging purposes to see all registers
 
             if current_line >= len(self.file):
                 terminated = True

@@ -1,9 +1,0 @@
-# Simple file which takes a zero terminated list and doubles each item
-LOOP:
-MOV IN DAT
-MOV DAT ACC
-JEZ END
-ADD DAT
-MOV ACC OUT
-JMP LOOP
-END:

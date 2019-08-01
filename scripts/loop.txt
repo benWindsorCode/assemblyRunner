@@ -1,3 +1,4 @@
+# Simple test which prints out numbers from 7 down to 0
 MOV 8 ACC
 MAIN:
 SUB 1

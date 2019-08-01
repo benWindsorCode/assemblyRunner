@@ -1,0 +1,4 @@
+# Scratch file to test code
+MOV 9 ACC
+ADD 1 
+MOV ACC OUT
