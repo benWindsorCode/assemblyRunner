@@ -5,7 +5,7 @@ from register import Register
 
 
 class Interpreter:
-    def __init__(self, path, input = None):
+    def __init__(self, path: str, input: List[int] = None):
         self.path: str = path
         self.input: List[int] = input
         self.input_pos: int = None
@@ -16,14 +16,14 @@ class Interpreter:
         self.parse()
 
     # Read in file and setup any input
-    def load_data(self):
+    def load_data(self) -> None:
         self.file = [line.rstrip('\n') for line in open(self.path)]
         if self.input is not None:
             self.registers[Register.IN] = self.input[0]
             self.input_pos = 0
 
     # Iterate through code and pick out any labels and their locations
-    def parse(self):
+    def parse(self) -> None:
         for i in range(len(self.file)):
             if self.__is_label(self.file[i]):
                 label = self.file[i][:-1]
@@ -33,7 +33,7 @@ class Interpreter:
                     self.labels[label] = i
         
     # Iterate over the file, terminating when current_line reachse the end of the file
-    def run(self):
+    def run(self) -> None:
         terminated = False
         current_line = 0
         # Handle labels, jump commands and register manipulations commands separately
@@ -62,7 +62,7 @@ class Interpreter:
         return Command[first_word]
     
     # Process a given register manipulation command
-    def parse_command(self, command: Command, line: str):
+    def parse_command(self, command: Command, line: str) -> None:
         if command == Command.MOV:
             second_word: str = line.split(" ")[1]
             third_word: str = line.split(" ")[2]
@@ -119,10 +119,10 @@ class Interpreter:
             val = self.registers[Register[second_word]]
         self.registers[Register.ACC] = self.registers[Register.ACC] + val
 
-    def _handle_sav(self):
+    def _handle_sav(self) -> None:
         self.registers[Register.BAK] = self.registers[Register.ACC]
 
-    def _handle_swp(self):
+    def _handle_swp(self) -> None:
         tmp = self.registers[Register.BAK]
         self.registers[Register.BAK] = self.registers[Register.ACC]
         self.registers[Register.ACC] = tmp
@@ -140,12 +140,12 @@ class Interpreter:
         else:
             return False
 
-    def __is_int(self, word: str):
+    def __is_int(self, word: str) -> bool:
         if word[0] in ('-', '+'):
             return word[1:].isdigit()
         return word.isdigit()
     
-    def __next_input(self):
+    def __next_input(self) -> None:
         self.input_pos += 1
         if self.input_pos >= len(self.input):
             self.registers[Register.IN] = None
