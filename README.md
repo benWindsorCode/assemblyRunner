@@ -11,4 +11,4 @@ There are the following registers:
 - DAT = A data storage register, can be directly accessed to store values
 
 There are the following commands:
-- MOV <src> <dst>
+- MOV \<src\> \<dst\>
