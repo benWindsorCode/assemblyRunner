@@ -37,5 +37,11 @@ MOV ACC OUT
 JMP LOOP
 END:
 ```
-Example input \[1,3,5,0\]
-Example output \[2,5,10\]
+Example input:
+```
+1,3,5,0
+```
+Example output:
+```
+2,5,10
+```
