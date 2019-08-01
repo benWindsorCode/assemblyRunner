@@ -26,7 +26,7 @@ There are the following commands:
 Comments can be made my starting a line witn a \# symbol.
 
 # Example 
-The following code takes a zero terminated sequence 
+The following code takes a zero terminated sequence, and outputs the double of each number in the sequence.
 ```
 LOOP:
 MOV IN DAT
@@ -41,10 +41,11 @@ Example input:
 ```
 1,3,5,0
 ```
-Example output:
+Output:
 ```
 2,5,10
 ```
+The code works by storing each input in the DAT register, moves it in to the ACC register to determine if its the end of the sequence, and if not, we then double the number and output it to the OUT register, before jumping back to the start of the loop to take in the next input.
 
 # Code Walkthrough
 The code is structured with specific enums for commands and registers in the 'command.py' and 'register.py' files. The 'main.py' file simply sets up the interpreter and points it to a file. The action happens in the 'interpreter.py' file. 
